@@ -7,17 +7,17 @@ namespace MusicApp;
 public class Song
 {
     public string? Name { get; set; }
-    public Uri Path { get; set; }
+    public string Path { get; set; }
     public bool IsPlayed { get; set; }
     private readonly MediaPlayer _mediaPlayer;
 
-    public Song(string? name, Uri path)
+    public Song(string? name, string path)
     {
         Name = name;
         Path = path;
         IsPlayed = false;
         _mediaPlayer = new MediaPlayer();
-        _mediaPlayer.Open(Path);
+        _mediaPlayer.Open(new Uri(Path, UriKind.RelativeOrAbsolute));
         _mediaPlayer.MediaFailed += (s, e) => MessageBox.Show(e.ErrorException.Message, "Ошибка");
     }
 

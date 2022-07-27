@@ -22,6 +22,6 @@ namespace MusicApp
             _song?.StopPlay();
 
         private void AddSoundButtonClick(object sender, RoutedEventArgs e) =>
-            _song = new Song("Бара Бара Бере Бере", new Uri("./Music/test.mp3", UriKind.RelativeOrAbsolute));
+            _song = new Song("Бара Бара Бере Бере", "./Music/test.mp3");
     }
 }
