@@ -4,25 +4,27 @@ namespace MusicApp
 {
     public partial class MainWindow : Window
     {
-        private Song? _song;
-        private AppSystem? _appSystem;
+        private readonly AppSystem _appSystem;
         
         public MainWindow()
         {
             InitializeComponent();
             _appSystem = new AppSystem();
+            _appSystem.LoadAllMusic();
+            _appSystem.SongList.Add(new Song("Тестовая песня", "./Music/test.mp3"));
+            _appSystem.CurrentSong = _appSystem.SongList[0];
         }
 
         private void PauseSoundButtonClick(object sender, RoutedEventArgs e) => 
-            _song?.PausePlay();
+            _appSystem.CurrentSong.PausePlay();
 
         private void PlaySoundButtonClick(object sender, RoutedEventArgs e) => 
-            _song?.StartPlay();
+            _appSystem.CurrentSong.StartPlay();
 
         private void AddSoundButtonClick(object sender, RoutedEventArgs e) =>
-            _song = new Song("Тестовая песня", "./Music/test.mp3");
+            _appSystem.AddSong();
 
         private void SoundVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
-            _song?.SetVolume(VolumeSlider.Value);
+            _appSystem.CurrentSong.SetVolume(VolumeSlider.Value);
     }
 }
