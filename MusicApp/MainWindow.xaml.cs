@@ -20,7 +20,7 @@ namespace MusicApp
             _song?.StartPlay();
 
         private void AddSoundButtonClick(object sender, RoutedEventArgs e) =>
-            _song = new Song("Бара Бара Бере Бере", "./Music/test.mp3");
+            _song = new Song("Тестовая песня", "./Music/test.mp3");
 
         private void SoundVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
             _song?.SetVolume(VolumeSlider.Value);
