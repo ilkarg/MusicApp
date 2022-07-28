@@ -68,4 +68,19 @@ public class Song
 
         return true;
     }
+
+    public bool SetVolume(double volume)
+    {
+        try
+        {
+            _mediaPlayer.Volume = volume;
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.Message, "Ошибка");
+            return false;
+        }
+
+        return true;
+    }
 }

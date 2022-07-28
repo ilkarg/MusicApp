@@ -22,9 +22,7 @@
                 <Button Width="60" Margin="10 10 10 10" Click="PlaySoundButtonClick">
                     <TextBlock FontSize="30">|></TextBlock>
                 </Button>
-                <Button Width="60" Margin="10 10 0 10" Click="StopSoundButtonClick">
-                    <TextBlock FontSize="30">[]</TextBlock>
-                </Button>
+                <Slider Name="VolumeSlider" Minimum="0" Maximum="100" Width="100" VerticalAlignment="Center" ValueChanged="SoundVolumeChanged"/>
             </StackPanel>
         </Grid>
     </Grid>
