@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MusicApp
 {
@@ -25,14 +26,22 @@ namespace MusicApp
             }
         }
 
-        private void PauseSoundButtonClick(object sender, RoutedEventArgs e) => 
-            _appSystem.CurrentSong.PausePlay();
-
         private void PlaySoundButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                _appSystem.CurrentSong.StartPlay();
+                if (_appSystem.CurrentSong.IsPlayed)
+                {
+                    _appSystem.CurrentSong.PausePlay();
+                    PlayButtonLabel.Text = "|>";
+                    _appSystem.CurrentSong.IsPlayed = false;
+                }
+                else
+                {
+                    _appSystem.CurrentSong.StartPlay();
+                    PlayButtonLabel.Text = "||";
+                    _appSystem.CurrentSong.IsPlayed = true;
+                }
             }
             catch (Exception exception)
             {
@@ -43,7 +52,10 @@ namespace MusicApp
         private void AddSoundButtonClick(object sender, RoutedEventArgs e) =>
             _appSystem.AddSong();
 
-        private void SoundVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
+        private void SoundVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
             _appSystem.CurrentSong.SetVolume(VolumeSlider.Value / 100);
+            ((Slider)sender).SelectionEnd=e.NewValue;
+        }
     }
 }
