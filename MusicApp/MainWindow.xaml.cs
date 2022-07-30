@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace MusicApp
@@ -22,10 +20,10 @@ namespace MusicApp
                 _appSystem.LoadAllMusic();
                 _appSystem.SongList.Add(new Song("Тестовая песня", "./Music/test.mp3"));
                 _appSystem.CurrentSong = _appSystem.SongList[0];
-                _appSystem.CurrentSong.SetVolume(1.0);
-                VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
                 _appSystem.CurrentSong.mediaPlayer.MediaOpened += (s, e) =>
                 {
+                    VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
+                    
                     if (_appSystem.CurrentSong.Duration["Hours"] > 0)
                     {
                         SongDuration.Text =
@@ -66,6 +64,7 @@ namespace MusicApp
                     "Seconds", _appSystem.CurrentSong.mediaPlayer.Position.Seconds
                 }
             };
+
             Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
             {
                 {

@@ -12,6 +12,7 @@ public class Song
     public Dictionary<string, int> Duration { get; set; }
     public double Volume { get; set; }
     public bool IsPlayed { get; set; }
+    public bool IsMuted { get; set; }
     public MediaPlayer mediaPlayer;
 
     public Song(string? name, string? path)
@@ -21,16 +22,28 @@ public class Song
             Name = name;
             Path = path;
             IsPlayed = false;
-            Duration = new Dictionary<string, int>();
-            Duration.Add("Hours", 0);
-            Duration.Add("Minutes", 0);
-            Duration.Add("Seconds", 0);
+            IsMuted = false;
+            Duration = new Dictionary<string, int>()
+            {
+                {
+                    "Hours", 0
+                },
+                {
+                    "Minutes", 0
+                },
+                {
+                    "Seconds", 0
+                }
+            };
             mediaPlayer = new MediaPlayer();
             mediaPlayer.Open(new Uri(Path, UriKind.RelativeOrAbsolute));
             mediaPlayer.MediaFailed += (s, e) => MessageBox.Show(e.ErrorException.Message, "Ошибка");
             mediaPlayer.MediaOpened += (s, e) =>
             {
-                MessageBox.Show("Я загрузился");
+                SetVolume(0);
+                StopPlay();
+                SetVolume(1);
+                
                 Duration["Hours"] = mediaPlayer.NaturalDuration.TimeSpan.Hours;
                 Duration["Minutes"] = mediaPlayer.NaturalDuration.TimeSpan.Minutes;
                 Duration["Seconds"] = mediaPlayer.NaturalDuration.TimeSpan.Seconds;
@@ -53,7 +66,7 @@ public class Song
         }
         catch (Exception exception)
         {
-            MessageBox.Show(exception.Message, "Ошибка");
+            MessageBox.Show(exception.StackTrace, "Ошибка");
             return false;
         }
         
@@ -69,7 +82,7 @@ public class Song
         }
         catch (Exception exception)
         {
-            MessageBox.Show(exception.Message, "Ошибка");
+            MessageBox.Show(exception.StackTrace, "Ошибка");
             return false;
         }
 
@@ -85,7 +98,7 @@ public class Song
         }
         catch (Exception exception)
         {
-            MessageBox.Show(exception.Message, "Ошибка");
+            MessageBox.Show(exception.StackTrace, "Ошибка");
             return false;
         }
 
@@ -101,26 +114,10 @@ public class Song
         }
         catch (Exception exception)
         {
-            MessageBox.Show(exception.Message, "Ошибка");
+            MessageBox.Show(exception.StackTrace, "Ошибка");
             return false;
         }
 
         return true;
-    }
-
-    public double GetVolume()
-    {
-        double volume = 0.0;
-        try
-        {
-            volume = mediaPlayer.Volume;
-        }
-        catch (Exception exception)
-        {
-            MessageBox.Show(exception.StackTrace, "Ошибка");
-            return 0.0;
-        }
-
-        return volume;
     }
 }
