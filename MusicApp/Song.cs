@@ -12,7 +12,7 @@ public class Song
     public Dictionary<string, int> Duration { get; set; }
     public double Volume { get; set; }
     public bool IsPlayed { get; set; }
-    private readonly MediaPlayer _mediaPlayer;
+    public MediaPlayer mediaPlayer;
 
     public Song(string? name, string? path)
     {
@@ -25,16 +25,17 @@ public class Song
             Duration.Add("Hours", 0);
             Duration.Add("Minutes", 0);
             Duration.Add("Seconds", 0);
-            _mediaPlayer = new MediaPlayer();
-            _mediaPlayer.Open(new Uri(Path, UriKind.RelativeOrAbsolute));
-            _mediaPlayer.MediaFailed += (s, e) => MessageBox.Show(e.ErrorException.Message, "Ошибка");
-            _mediaPlayer.MediaOpened += (s, e) =>
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.Open(new Uri(Path, UriKind.RelativeOrAbsolute));
+            mediaPlayer.MediaFailed += (s, e) => MessageBox.Show(e.ErrorException.Message, "Ошибка");
+            mediaPlayer.MediaOpened += (s, e) =>
             {
-                Duration["Hours"] = _mediaPlayer.NaturalDuration.TimeSpan.Hours;
-                Duration["Minutes"] = _mediaPlayer.NaturalDuration.TimeSpan.Minutes;
-                Duration["Seconds"] = _mediaPlayer.NaturalDuration.TimeSpan.Seconds;
+                MessageBox.Show("Я загрузился");
+                Duration["Hours"] = mediaPlayer.NaturalDuration.TimeSpan.Hours;
+                Duration["Minutes"] = mediaPlayer.NaturalDuration.TimeSpan.Minutes;
+                Duration["Seconds"] = mediaPlayer.NaturalDuration.TimeSpan.Seconds;
 
-                Volume = _mediaPlayer.Volume;
+                Volume = mediaPlayer.Volume;
             };
         }
         catch (Exception exception)
@@ -47,7 +48,7 @@ public class Song
     {
         try
         {
-            _mediaPlayer.Play();
+            mediaPlayer.Play();
             IsPlayed = true;
         }
         catch (Exception exception)
@@ -63,7 +64,7 @@ public class Song
     {
         try
         {
-            _mediaPlayer.Pause();
+            mediaPlayer.Pause();
             IsPlayed = false;
         }
         catch (Exception exception)
@@ -79,7 +80,7 @@ public class Song
     {
         try
         {
-            _mediaPlayer.Stop();
+            mediaPlayer.Stop();
             IsPlayed = false;
         }
         catch (Exception exception)
@@ -95,7 +96,7 @@ public class Song
     {
         try
         {
-            _mediaPlayer.Volume = volume;
+            mediaPlayer.Volume = volume;
             Volume = volume;
         }
         catch (Exception exception)
@@ -112,7 +113,7 @@ public class Song
         double volume = 0.0;
         try
         {
-            volume = _mediaPlayer.Volume;
+            volume = mediaPlayer.Volume;
         }
         catch (Exception exception)
         {

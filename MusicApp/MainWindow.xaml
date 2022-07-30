@@ -11,6 +11,15 @@
             <RowDefinition/>
             <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel VerticalAlignment="Bottom">
+                <TextBlock HorizontalAlignment="Center">
+                    <TextBlock Name="PlayedDuration">00:00</TextBlock>
+                    <TextBlock> / </TextBlock>
+                    <TextBlock Name="SongDuration">00:00</TextBlock>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
         <Grid Grid.Row="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="60" Margin="0 10 10 10" Click="AddSoundButtonClick">
