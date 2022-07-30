@@ -104,6 +104,15 @@ namespace MusicApp
                     _appSystem.CurrentSong.IsPlayed = true;
                     _timer.Start();
                 }
+
+                // Возможный вариант фикса, но помогает не всегда, к сожалению, по среди проигрывания может все равно один раз добавиться лишняя секунда
+                /*_appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(
+                    0,
+                    _appSystem.CurrentSong.mediaPlayer.Position.Hours,
+                    _appSystem.CurrentSong.mediaPlayer.Position.Minutes,
+                    _appSystem.CurrentSong.mediaPlayer.Position.Seconds,
+                    0
+                    );*/
             }
             catch (Exception exception)
             {

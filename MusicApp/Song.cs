@@ -12,7 +12,6 @@ public class Song
     public Dictionary<string, int> Duration { get; set; }
     public double Volume { get; set; }
     public bool IsPlayed { get; set; }
-    public bool IsMuted { get; set; }
     public MediaPlayer mediaPlayer;
 
     public Song(string? name, string? path)
@@ -22,7 +21,6 @@ public class Song
             Name = name;
             Path = path;
             IsPlayed = false;
-            IsMuted = false;
             Duration = new Dictionary<string, int>()
             {
                 {
@@ -40,8 +38,6 @@ public class Song
             mediaPlayer.MediaFailed += (s, e) => MessageBox.Show(e.ErrorException.Message, "Ошибка");
             mediaPlayer.MediaOpened += (s, e) =>
             {
-                SetVolume(0);
-                StopPlay();
                 SetVolume(1);
                 
                 Duration["Hours"] = mediaPlayer.NaturalDuration.TimeSpan.Hours;
