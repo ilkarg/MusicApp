@@ -23,21 +23,36 @@ namespace MusicApp
                 _appSystem.CurrentSong.mediaPlayer.MediaOpened += (s, e) =>
                 {
                     VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
+                    SongDurationSlider.Maximum = _appSystem.TimeToSeconds(
+                        _appSystem.CurrentSong.Duration["Hours"], 
+                        _appSystem.CurrentSong.Duration["Minutes"], 
+                        _appSystem.CurrentSong.Duration["Seconds"]
+                        );
                     
                     if (_appSystem.CurrentSong.Duration["Hours"] > 0)
                     {
                         SongDuration.Text =
                             String.Format("{0}:{1}:{2}", 
-                                _appSystem.CurrentSong.Duration["Hours"] < 10 ? $"0{_appSystem.CurrentSong.Duration["Hours"]}" : _appSystem.CurrentSong.Duration["Hours"], 
-                                _appSystem.CurrentSong.Duration["Minutes"] < 10 ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" : _appSystem.CurrentSong.Duration["Minutes"],
-                                _appSystem.CurrentSong.Duration["Seconds"] < 10 ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" : _appSystem.CurrentSong.Duration["Seconds"]
+                                _appSystem.CurrentSong.Duration["Hours"] < 10 
+                                    ? $"0{_appSystem.CurrentSong.Duration["Hours"]}" 
+                                    : _appSystem.CurrentSong.Duration["Hours"], 
+                                _appSystem.CurrentSong.Duration["Minutes"] < 10 
+                                    ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" 
+                                    : _appSystem.CurrentSong.Duration["Minutes"],
+                                _appSystem.CurrentSong.Duration["Seconds"] < 10 
+                                    ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" 
+                                    : _appSystem.CurrentSong.Duration["Seconds"]
                             );
                     }
                     else
                     {
                         SongDuration.Text = String.Format("{0}:{1}",
-                            _appSystem.CurrentSong.Duration["Minutes"] < 10 ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" : _appSystem.CurrentSong.Duration["Minutes"],
-                            _appSystem.CurrentSong.Duration["Seconds"] < 10 ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" : _appSystem.CurrentSong.Duration["Seconds"]
+                            _appSystem.CurrentSong.Duration["Minutes"] < 10 
+                                ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" 
+                                : _appSystem.CurrentSong.Duration["Minutes"],
+                            _appSystem.CurrentSong.Duration["Seconds"] < 10 
+                                ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" 
+                                : _appSystem.CurrentSong.Duration["Seconds"]
                         );
                     }
                 };
@@ -84,6 +99,11 @@ namespace MusicApp
             }
 
             PlayedDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
+
+            if (_appSystem.CurrentSong.IsPlayed)
+            {
+                SongDurationSlider.Value += 1;
+            }
         }
 
         private void PlaySoundButtonClick(object sender, RoutedEventArgs e)
@@ -126,7 +146,16 @@ namespace MusicApp
         private void SoundVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _appSystem.CurrentSong.SetVolume(VolumeSlider.Value / 100);
-            ((Slider)sender).SelectionEnd=e.NewValue;
+            ((Slider)sender).SelectionEnd = e.NewValue;
+        }
+
+        private void SoundPlayerProgressChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ((Slider)sender).SelectionEnd = e.NewValue;
+            /*if (_appSystem.LMBClicked)
+            {
+                
+            }*/
         }
     }
 }
