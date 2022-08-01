@@ -69,4 +69,34 @@ public class AppSystem
 
         return resultTimeDictionary["Hours"] + resultTimeDictionary["Minutes"] + resultTimeDictionary["Seconds"];
     }
+
+    public Dictionary<string, int> SecondsToTime(int seconds)
+    {
+        Dictionary<string, int> timeDictionary = new Dictionary<string, int>()
+        {
+            {
+                "Hours", 0
+            },
+            {
+                "Minutes", 0
+            },
+            {
+                "Seconds", 0
+            }
+        };
+
+        try
+        {
+            timeDictionary["Hours"] = seconds / 60 / 60;
+            timeDictionary["Minutes"] = (seconds / 60) - (timeDictionary["Hours"] * 60);
+            timeDictionary["Seconds"] = seconds % 60;
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+            return null;
+        }
+
+        return timeDictionary;
+    }
 }

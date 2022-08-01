@@ -18,7 +18,7 @@
                     <TextBlock> / </TextBlock>
                     <TextBlock Name="SongDuration">00:00</TextBlock>
                 </TextBlock>
-                <Slider IsSelectionRangeEnabled="True" Name="SongDurationSlider" Width="300" Minimum="0" ValueChanged="SoundPlayerProgressChanged"/>
+                <Slider IsSelectionRangeEnabled="True" Name="SongDurationSlider" Width="300" Minimum="0" LostMouseCapture="SongDurationSliderLostMouseCapture" ValueChanged="SoundPlayerProgressChanged"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">

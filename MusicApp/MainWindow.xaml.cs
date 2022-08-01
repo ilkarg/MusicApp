@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace MusicApp
@@ -83,19 +84,27 @@ namespace MusicApp
             Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
             {
                 {
-                    "HoursLabel", timeDictionary["Hours"] > 0 ? $"{timeDictionary["Hours"]}:" : ""
+                    "HoursLabel", timeDictionary["Hours"] > 0 
+                        ? $"{timeDictionary["Hours"]}:" 
+                        : ""
                 },
                 {
-                    "MinutesLabel", timeDictionary["Minutes"] < 10 ? $"0{timeDictionary["Minutes"]}:" : $"{timeDictionary["Minutes"]}:"
+                    "MinutesLabel", timeDictionary["Minutes"] < 10 
+                        ? $"0{timeDictionary["Minutes"]}:" 
+                        : $"{timeDictionary["Minutes"]}:"
                 },
                 {
-                    "SecondsLabel", timeDictionary["Seconds"] < 10 ? $"0{timeDictionary["Seconds"]}" : $"{timeDictionary["Seconds"]}"
+                    "SecondsLabel", timeDictionary["Seconds"] < 10 
+                        ? $"0{timeDictionary["Seconds"]}" 
+                        : $"{timeDictionary["Seconds"]}"
                 }
             };
 
             if (timeLabelDictionary["HoursLabel"] != "")
             {
-                timeLabelDictionary["HoursLabel"] = timeDictionary["Hours"] < 10 ? $"0{timeDictionary["Hours"]}:" : $"{timeDictionary["Hours"]}:";
+                timeLabelDictionary["HoursLabel"] = timeDictionary["Hours"] < 10 
+                    ? $"0{timeDictionary["Hours"]}:" 
+                    : $"{timeDictionary["Hours"]}:";
             }
 
             PlayedDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
@@ -119,6 +128,15 @@ namespace MusicApp
                 }
                 else
                 {
+                    if (SongDurationSlider.Value == SongDurationSlider.Maximum)
+                    {
+                        SongDurationSlider.Value = 0;
+                        PlayedDuration.Text = _appSystem.CurrentSong.Duration["Hours"] > 0
+                            ? "00:00:00"
+                            : "00:00";
+                        _appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(0, 0, 0);
+                    }
+
                     _appSystem.CurrentSong.StartPlay();
                     PlayButtonLabel.Text = "||";
                     _appSystem.CurrentSong.IsPlayed = true;
@@ -152,10 +170,43 @@ namespace MusicApp
         private void SoundPlayerProgressChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ((Slider)sender).SelectionEnd = e.NewValue;
-            /*if (_appSystem.LMBClicked)
+            if (SongDurationSlider.Value == SongDurationSlider.Maximum)
             {
-                
-            }*/
+                PlayButtonLabel.Text = "|>";
+                _timer.Stop();
+                _appSystem.CurrentSong.StopPlay();
+            }
+        }
+
+        private void SongDurationSliderLostMouseCapture(object sender, MouseEventArgs e)
+        {
+            int seconds = Convert.ToInt32(SongDurationSlider.Value);
+            Dictionary<string, int> timeDictionary = _appSystem.SecondsToTime(seconds);
+            Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
+            {
+                {
+                    "HoursLabel", timeDictionary["Hours"] > 0 
+                        ? $"{timeDictionary["Hours"]}:" 
+                        : ""
+                },
+                {
+                    "MinutesLabel", timeDictionary["Minutes"] < 10 
+                        ? $"0{timeDictionary["Minutes"]}:" 
+                        : $"{timeDictionary["Minutes"]}:"
+                },
+                {
+                    "SecondsLabel", timeDictionary["Seconds"] < 10 
+                        ? $"0{timeDictionary["Seconds"]}" 
+                        : $"{timeDictionary["Seconds"]}"
+                }
+            };
+
+            PlayedDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
+            _appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(
+                timeDictionary["Hours"],
+                timeDictionary["Minutes"],
+                timeDictionary["Seconds"]
+                );
         }
     }
 }
