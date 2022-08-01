@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace MusicApp;
 
@@ -8,13 +11,37 @@ public class AppSystem
 {
     public Song CurrentSong;
     public List<Song> SongList = new List<Song>();
-    public bool LMBClicked = false;
+    public int ListIndex = 0;
+    private ListView _songListView;
+
+    public AppSystem(ListView songListView)
+    {
+        try
+        {
+            _songListView = songListView;
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+        }
+    }
 
     public bool LoadAllMusic()
     {
         try
         {
-            MessageBox.Show("LoadAllMusic()", "Debug");
+            string[] files = Directory.GetFiles("Music");
+            string filename = "";
+
+            foreach (string file in files)
+            {
+                if (file.EndsWith(".mp3"))
+                {
+                    filename = ReplaceFileName(file);
+                    SongList.Add(new Song(filename, file));
+                    _songListView.Items.Add(filename);
+                }
+            }
         }
         catch (Exception exception)
         {
@@ -29,11 +56,105 @@ public class AppSystem
     {
         try
         {
-            MessageBox.Show("AddSong()", "Debug");
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Browse Audio Files";
+            openFileDialog.Filter = "MP3 Files(*.mp3)|*.mp3";
+            openFileDialog.CheckFileExists = true;
+            openFileDialog.CheckPathExists = true;
+            openFileDialog.Multiselect = true;
+            openFileDialog.ShowDialog();
+
+            string filename = "";
+            string path = Directory.GetCurrentDirectory() + "/Music/";
+
+            foreach (string file in openFileDialog.FileNames)
+            {
+                filename = ReplaceFileName(file);
+                File.Copy(file, path + filename + ".mp3");
+                SongList.Add(new Song(filename, path + filename + ".mp3"));
+                _songListView.Items.Add(filename);
+            }
         }
         catch (Exception exception)
         {
             MessageBox.Show(exception.Message, "Ошибка");
+            return false;
+        }
+
+        return true;
+    }
+
+    public string ReplaceFileName(string file)
+    {
+        string filename = "";
+        
+        try
+        {
+            if (file.LastIndexOf('/') != -1)
+            {
+                filename = file.Substring(file.LastIndexOf('/')).Replace("/", "").Replace(".mp3", "");
+            }
+            else
+            {
+                filename = file.Substring(file.LastIndexOf('\\')).Replace(@"\", "").Replace(".mp3", "");
+            }
+        }
+        catch (Exception exception)
+        {
+            
+            return "Error";
+        }
+
+        return filename;
+    }
+
+    public bool NextSong()
+    {
+        try
+        {
+            ListIndex = ListIndex >= SongList.Count - 1 ? 0 : ListIndex++;
+            CurrentSong = SongList[ListIndex];
+            ChangeFocusInSongList();
+            MessageBox.Show($"NextSong() ListIndex - {ListIndex}");
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool PreviousSong()
+    {
+        try
+        {
+            ListIndex = ListIndex <= 0 ? SongList.Count - 1 : ListIndex--;
+            CurrentSong = SongList[ListIndex];
+            ChangeFocusInSongList();
+            MessageBox.Show($"PreviousSong() ListIndex - {ListIndex}");
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool ChangeFocusInSongList()
+    {
+        try
+        {
+            _songListView.SelectedIndex = ListIndex;
+            _songListView.ScrollIntoView(ListIndex);
+            _songListView.Focus();
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
             return false;
         }
 

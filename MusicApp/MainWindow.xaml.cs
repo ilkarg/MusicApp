@@ -17,10 +17,10 @@ namespace MusicApp
             InitializeComponent();
             try
             {
-                _appSystem = new AppSystem();
+                _appSystem = new AppSystem(SongListView);
                 _appSystem.LoadAllMusic();
-                _appSystem.SongList.Add(new Song("Тестовая песня", "./Music/test.mp3"));
                 _appSystem.CurrentSong = _appSystem.SongList[0];
+                _appSystem.ChangeFocusInSongList();
                 _appSystem.CurrentSong.mediaPlayer.MediaOpened += (s, e) =>
                 {
                     VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
@@ -30,32 +30,26 @@ namespace MusicApp
                         _appSystem.CurrentSong.Duration["Seconds"]
                         );
                     
-                    if (_appSystem.CurrentSong.Duration["Hours"] > 0)
+                    Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
                     {
-                        SongDuration.Text =
-                            String.Format("{0}:{1}:{2}", 
-                                _appSystem.CurrentSong.Duration["Hours"] < 10 
-                                    ? $"0{_appSystem.CurrentSong.Duration["Hours"]}" 
-                                    : _appSystem.CurrentSong.Duration["Hours"], 
-                                _appSystem.CurrentSong.Duration["Minutes"] < 10 
-                                    ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" 
-                                    : _appSystem.CurrentSong.Duration["Minutes"],
-                                _appSystem.CurrentSong.Duration["Seconds"] < 10 
-                                    ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" 
-                                    : _appSystem.CurrentSong.Duration["Seconds"]
-                            );
-                    }
-                    else
-                    {
-                        SongDuration.Text = String.Format("{0}:{1}",
-                            _appSystem.CurrentSong.Duration["Minutes"] < 10 
-                                ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}" 
-                                : _appSystem.CurrentSong.Duration["Minutes"],
-                            _appSystem.CurrentSong.Duration["Seconds"] < 10 
+                        {
+                            "HoursLabel", _appSystem.CurrentSong.Duration["Hours"] > 0 
+                                ? $"{_appSystem.CurrentSong.Duration["Hours"]}:" 
+                                : ""
+                        },
+                        {
+                            "MinutesLabel", _appSystem.CurrentSong.Duration["Minutes"] < 10 
+                                ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}:" 
+                                : $"{_appSystem.CurrentSong.Duration["Minutes"]}:"
+                        },
+                        {
+                            "SecondsLabel", _appSystem.CurrentSong.Duration["Seconds"] < 10 
                                 ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" 
-                                : _appSystem.CurrentSong.Duration["Seconds"]
-                        );
-                    }
+                                : $"{_appSystem.CurrentSong.Duration["Seconds"]}"
+                        }
+                    };
+            
+                    SongDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
                 };
                 _timer.Interval = TimeSpan.FromSeconds(1);
                 _timer.Tick += TimerTick;
@@ -68,50 +62,58 @@ namespace MusicApp
 
         private void TimerTick(object sender, EventArgs e)
         {
-            Dictionary<string, int> timeDictionary = new Dictionary<string, int>()
+            try
             {
+                Dictionary<string, int> timeDictionary = new Dictionary<string, int>()
                 {
-                    "Hours", _appSystem.CurrentSong.mediaPlayer.Position.Hours
-                },
-                {
-                    "Minutes", _appSystem.CurrentSong.mediaPlayer.Position.Minutes
-                },
-                {
-                    "Seconds", _appSystem.CurrentSong.mediaPlayer.Position.Seconds
-                }
-            };
+                    {
+                        "Hours", _appSystem.CurrentSong.mediaPlayer.Position.Hours
+                    },
+                    {
+                        "Minutes", _appSystem.CurrentSong.mediaPlayer.Position.Minutes
+                    },
+                    {
+                        "Seconds", _appSystem.CurrentSong.mediaPlayer.Position.Seconds
+                    }
+                };
 
-            Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
-            {
+                Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
                 {
-                    "HoursLabel", timeDictionary["Hours"] > 0 
-                        ? $"{timeDictionary["Hours"]}:" 
-                        : ""
-                },
-                {
-                    "MinutesLabel", timeDictionary["Minutes"] < 10 
-                        ? $"0{timeDictionary["Minutes"]}:" 
-                        : $"{timeDictionary["Minutes"]}:"
-                },
-                {
-                    "SecondsLabel", timeDictionary["Seconds"] < 10 
-                        ? $"0{timeDictionary["Seconds"]}" 
-                        : $"{timeDictionary["Seconds"]}"
-                }
-            };
+                    {
+                        "HoursLabel", timeDictionary["Hours"] > 0
+                            ? $"{timeDictionary["Hours"]}:"
+                            : ""
+                    },
+                    {
+                        "MinutesLabel", timeDictionary["Minutes"] < 10
+                            ? $"0{timeDictionary["Minutes"]}:"
+                            : $"{timeDictionary["Minutes"]}:"
+                    },
+                    {
+                        "SecondsLabel", timeDictionary["Seconds"] < 10
+                            ? $"0{timeDictionary["Seconds"]}"
+                            : $"{timeDictionary["Seconds"]}"
+                    }
+                };
 
-            if (timeLabelDictionary["HoursLabel"] != "")
-            {
-                timeLabelDictionary["HoursLabel"] = timeDictionary["Hours"] < 10 
-                    ? $"0{timeDictionary["Hours"]}:" 
-                    : $"{timeDictionary["Hours"]}:";
+                if (timeLabelDictionary["HoursLabel"] != "")
+                {
+                    timeLabelDictionary["HoursLabel"] = timeDictionary["Hours"] < 10
+                        ? $"0{timeDictionary["Hours"]}:"
+                        : $"{timeDictionary["Hours"]}:";
+                }
+
+                PlayedDuration.Text =
+                    $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
+
+                if (_appSystem.CurrentSong.IsPlayed)
+                {
+                    SongDurationSlider.Value += 1;
+                }
             }
-
-            PlayedDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
-
-            if (_appSystem.CurrentSong.IsPlayed)
+            catch (Exception exception)
             {
-                SongDurationSlider.Value += 1;
+                MessageBox.Show(exception.StackTrace, "Ошибка");
             }
         }
 
@@ -180,33 +182,94 @@ namespace MusicApp
 
         private void SongDurationSliderLostMouseCapture(object sender, MouseEventArgs e)
         {
-            int seconds = Convert.ToInt32(SongDurationSlider.Value);
-            Dictionary<string, int> timeDictionary = _appSystem.SecondsToTime(seconds);
-            Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
+            try
             {
+                int seconds = Convert.ToInt32(SongDurationSlider.Value);
+                Dictionary<string, int> timeDictionary = _appSystem.SecondsToTime(seconds);
+                Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
                 {
-                    "HoursLabel", timeDictionary["Hours"] > 0 
-                        ? $"{timeDictionary["Hours"]}:" 
-                        : ""
-                },
-                {
-                    "MinutesLabel", timeDictionary["Minutes"] < 10 
-                        ? $"0{timeDictionary["Minutes"]}:" 
-                        : $"{timeDictionary["Minutes"]}:"
-                },
-                {
-                    "SecondsLabel", timeDictionary["Seconds"] < 10 
-                        ? $"0{timeDictionary["Seconds"]}" 
-                        : $"{timeDictionary["Seconds"]}"
-                }
-            };
+                    {
+                        "HoursLabel", timeDictionary["Hours"] > 0
+                            ? $"{timeDictionary["Hours"]}:"
+                            : ""
+                    },
+                    {
+                        "MinutesLabel", timeDictionary["Minutes"] < 10
+                            ? $"0{timeDictionary["Minutes"]}:"
+                            : $"{timeDictionary["Minutes"]}:"
+                    },
+                    {
+                        "SecondsLabel", timeDictionary["Seconds"] < 10
+                            ? $"0{timeDictionary["Seconds"]}"
+                            : $"{timeDictionary["Seconds"]}"
+                    }
+                };
 
-            PlayedDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
-            _appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(
-                timeDictionary["Hours"],
-                timeDictionary["Minutes"],
-                timeDictionary["Seconds"]
+                PlayedDuration.Text =
+                    $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
+                _appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(
+                    timeDictionary["Hours"],
+                    timeDictionary["Minutes"],
+                    timeDictionary["Seconds"]
                 );
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.StackTrace, "Ошибка");
+            }
+        }
+
+        private void PreviousSongButtonClick(object sender, RoutedEventArgs e) =>
+            _appSystem.PreviousSong();
+
+        private void NextSongButtonClick(object sender, RoutedEventArgs e) =>
+            _appSystem.NextSong();
+
+        private void SongListViewSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _appSystem.ListIndex = SongListView.SelectedIndex;
+                _appSystem.CurrentSong = _appSystem.SongList[_appSystem.ListIndex];
+                
+                VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
+
+                Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
+                {
+                    {
+                        "HoursLabel", _appSystem.CurrentSong.Duration["Hours"] > 0
+                            ? $"{_appSystem.CurrentSong.Duration["Hours"]}:"
+                            : ""
+                    },
+                    {
+                        "MinutesLabel", _appSystem.CurrentSong.Duration["Minutes"] < 10
+                            ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}:"
+                            : $"{_appSystem.CurrentSong.Duration["Minutes"]}:"
+                    },
+                    {
+                        "SecondsLabel", _appSystem.CurrentSong.Duration["Seconds"] < 10
+                            ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}"
+                            : $"{_appSystem.CurrentSong.Duration["Seconds"]}"
+                    }
+                };
+
+                SongDuration.Text =
+                    $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
+                PlayedDuration.Text = _appSystem.CurrentSong.Duration["Hours"] > 0
+                    ? "00:00:00"
+                    : "00:00";
+
+                SongDurationSlider.Value = 0;
+                SongDurationSlider.Maximum = _appSystem.TimeToSeconds(
+                    _appSystem.CurrentSong.Duration["Hours"],
+                    _appSystem.CurrentSong.Duration["Minutes"],
+                    _appSystem.CurrentSong.Duration["Seconds"]
+                );
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.StackTrace, "Ошибка");
+            }
         }
     }
 }
