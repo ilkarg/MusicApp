@@ -18,39 +18,46 @@ namespace MusicApp
             try
             {
                 _appSystem = new AppSystem(SongListView);
+                _appSystem.CheckExistsMusicDir();
                 _appSystem.LoadAllMusic();
-                _appSystem.CurrentSong = _appSystem.SongList[0];
-                _appSystem.ChangeFocusInSongList();
-                _appSystem.CurrentSong.mediaPlayer.MediaOpened += (s, e) =>
+                if (_appSystem.SongList.Count > 0)
                 {
-                    VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
-                    SongDurationSlider.Maximum = _appSystem.TimeToSeconds(
-                        _appSystem.CurrentSong.Duration["Hours"], 
-                        _appSystem.CurrentSong.Duration["Minutes"], 
-                        _appSystem.CurrentSong.Duration["Seconds"]
-                        );
-                    
-                    Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
+                    _appSystem.CurrentSong = _appSystem.SongList[0];
+
+                    _appSystem.ChangeFocusInSongList();
+                    _appSystem.CurrentSong.mediaPlayer.MediaOpened += (s, e) =>
                     {
+                        VolumeSlider.Value = _appSystem.CurrentSong.Volume * 100;
+                        SongDurationSlider.Maximum = _appSystem.TimeToSeconds(
+                            _appSystem.CurrentSong.Duration["Hours"],
+                            _appSystem.CurrentSong.Duration["Minutes"],
+                            _appSystem.CurrentSong.Duration["Seconds"]
+                        );
+
+                        Dictionary<string, string> timeLabelDictionary = new Dictionary<string, string>()
                         {
-                            "HoursLabel", _appSystem.CurrentSong.Duration["Hours"] > 0 
-                                ? $"{_appSystem.CurrentSong.Duration["Hours"]}:" 
-                                : ""
-                        },
-                        {
-                            "MinutesLabel", _appSystem.CurrentSong.Duration["Minutes"] < 10 
-                                ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}:" 
-                                : $"{_appSystem.CurrentSong.Duration["Minutes"]}:"
-                        },
-                        {
-                            "SecondsLabel", _appSystem.CurrentSong.Duration["Seconds"] < 10 
-                                ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}" 
-                                : $"{_appSystem.CurrentSong.Duration["Seconds"]}"
-                        }
+                            {
+                                "HoursLabel", _appSystem.CurrentSong.Duration["Hours"] > 0
+                                    ? $"{_appSystem.CurrentSong.Duration["Hours"]}:"
+                                    : ""
+                            },
+                            {
+                                "MinutesLabel", _appSystem.CurrentSong.Duration["Minutes"] < 10
+                                    ? $"0{_appSystem.CurrentSong.Duration["Minutes"]}:"
+                                    : $"{_appSystem.CurrentSong.Duration["Minutes"]}:"
+                            },
+                            {
+                                "SecondsLabel", _appSystem.CurrentSong.Duration["Seconds"] < 10
+                                    ? $"0{_appSystem.CurrentSong.Duration["Seconds"]}"
+                                    : $"{_appSystem.CurrentSong.Duration["Seconds"]}"
+                            }
+                        };
+
+                        SongDuration.Text =
+                            $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
                     };
-            
-                    SongDuration.Text = $"{timeLabelDictionary["HoursLabel"]}{timeLabelDictionary["MinutesLabel"]}{timeLabelDictionary["SecondsLabel"]}";
-                };
+                }
+
                 _timer.Interval = TimeSpan.FromSeconds(1);
                 _timer.Tick += TimerTick;
             }

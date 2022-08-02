@@ -26,6 +26,25 @@ public class AppSystem
         }
     }
 
+    public bool CheckExistsMusicDir()
+    {
+        try
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            if (!Directory.Exists(currentDir + "/Music"))
+            {
+                Directory.CreateDirectory(currentDir + "/Music");
+            }
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+            return false;
+        }
+
+        return true;
+    }
+
     public bool LoadAllMusic()
     {
         try
