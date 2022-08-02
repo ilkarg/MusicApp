@@ -20,8 +20,6 @@ namespace MusicApp
             try
             {
                 _appSystem = new AppSystem(SongListView);
-                _appSystem.CreateTrayContextMenu(Taskbar);
-                _appSystem.windowState = WindowState;
                 _appSystem.CheckExistsMusicDir();
                 _appSystem.LoadAllMusic();
                 if (_appSystem.SongList.Count > 0)
@@ -283,39 +281,6 @@ namespace MusicApp
                     _appSystem.CurrentSong.Duration["Minutes"],
                     _appSystem.CurrentSong.Duration["Seconds"]
                 );
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.StackTrace, "Ошибка");
-            }
-        }
-
-        private void MainWindowStateChanged(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (WindowState == WindowState.Minimized)
-                {
-                    Hide();
-                }
-                else
-                {
-                    _appSystem.windowState = WindowState;
-                }
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.StackTrace, "Ошибка");
-            }
-        }
-
-        private void TaskbarIconTrayLeftMouseDown(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Show();
-                WindowState = _appSystem.windowState;
-                Activate();
             }
             catch (Exception exception)
             {

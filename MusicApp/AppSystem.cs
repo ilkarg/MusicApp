@@ -16,7 +16,6 @@ public class AppSystem
     public Song CurrentSong;
     public List<Song> SongList = new List<Song>();
     public int ListIndex = 0;
-    public WindowState windowState;
     private ListView _songListView;
 
     public AppSystem(ListView songListView)
@@ -29,27 +28,6 @@ public class AppSystem
         {
             MessageBox.Show(exception.StackTrace, "Ошибка");
         }
-    }
-
-    public bool CreateTrayContextMenu(TaskbarIcon taskbar)
-    {
-        try
-        {
-            taskbar.ContextMenu = new ContextMenu();
-
-            MenuItem closeMenuItem = new MenuItem();
-            closeMenuItem.Header = "Close";
-            closeMenuItem.Click += (sender, args) =>
-                Application.Current.Shutdown();
-            taskbar.ContextMenu.Items.Add(closeMenuItem);
-        }
-        catch (Exception exception)
-        {
-            MessageBox.Show(exception.StackTrace, "Ошибка");
-            return false;
-        }
-
-        return true;
     }
 
     public bool CheckExistsMusicDir()

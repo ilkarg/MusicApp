@@ -6,7 +6,7 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:MusicApp"
         mc:Ignorable="d"
-        Title="MusicApp" Height="450" Width="800" Icon="icon.ico" StateChanged="MainWindowStateChanged">
+        Title="MusicApp" Height="450" Width="800" Icon="icon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -45,6 +45,5 @@
                 <Slider IsSelectionRangeEnabled="True" Name="VolumeSlider" Minimum="0" Maximum="100" Width="100" VerticalAlignment="Center" ValueChanged="SoundVolumeChanged"/>
             </StackPanel>
         </Grid>
-        <tb:TaskbarIcon Name="Taskbar" Visibility="Visible" ToolTipText="MusicApp" IconSource="icon.ico" TrayLeftMouseDown="TaskbarIconTrayLeftMouseDown"/>
     </Grid>
 </Window>
