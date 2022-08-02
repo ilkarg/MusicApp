@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Forms;
 using System.Windows.Threading;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace MusicApp
 {
@@ -18,6 +20,8 @@ namespace MusicApp
             try
             {
                 _appSystem = new AppSystem(SongListView);
+                _appSystem.CreateTrayContextMenu(Taskbar);
+                _appSystem.windowState = WindowState;
                 _appSystem.CheckExistsMusicDir();
                 _appSystem.LoadAllMusic();
                 if (_appSystem.SongList.Count > 0)
@@ -181,9 +185,16 @@ namespace MusicApp
             ((Slider)sender).SelectionEnd = e.NewValue;
             if (SongDurationSlider.Value == SongDurationSlider.Maximum)
             {
-                PlayButtonLabel.Text = "|>";
-                _timer.Stop();
-                _appSystem.CurrentSong.StopPlay();
+                _appSystem.CurrentSong.IsPlayed = false;
+                _appSystem.CurrentSong.IsEnded = true;
+                _appSystem.NextSong();
+                _appSystem.CurrentSong.IsPlayed = true;
+                _appSystem.CurrentSong.IsEnded = false;
+                PlayedDuration.Text = _appSystem.CurrentSong.Duration["Hours"] > 0
+                    ? "00:00:00"
+                    : "00:00";
+                _appSystem.CurrentSong.mediaPlayer.Position = new TimeSpan(0, 0, 0);
+                _appSystem.CurrentSong.StartPlay();
             }
         }
 
@@ -272,6 +283,39 @@ namespace MusicApp
                     _appSystem.CurrentSong.Duration["Minutes"],
                     _appSystem.CurrentSong.Duration["Seconds"]
                 );
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.StackTrace, "Ошибка");
+            }
+        }
+
+        private void MainWindowStateChanged(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (WindowState == WindowState.Minimized)
+                {
+                    Hide();
+                }
+                else
+                {
+                    _appSystem.windowState = WindowState;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.StackTrace, "Ошибка");
+            }
+        }
+
+        private void TaskbarIconTrayLeftMouseDown(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Show();
+                WindowState = _appSystem.windowState;
+                Activate();
             }
             catch (Exception exception)
             {

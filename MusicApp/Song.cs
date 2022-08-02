@@ -12,6 +12,7 @@ public class Song
     public Dictionary<string, int> Duration { get; set; }
     public double Volume { get; set; }
     public bool IsPlayed { get; set; }
+    public bool IsEnded { get; set; }
     public MediaPlayer mediaPlayer;
 
     public Song(string? name, string? path)
@@ -21,6 +22,7 @@ public class Song
             Name = name;
             Path = path;
             IsPlayed = false;
+            IsEnded = false;
             Duration = new Dictionary<string, int>()
             {
                 {

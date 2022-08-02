@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
+using System.Windows.Forms.VisualStyles;
+using Hardcodet.Wpf.TaskbarNotification;
+using ListView = System.Windows.Controls.ListView;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace MusicApp;
 
@@ -12,6 +16,7 @@ public class AppSystem
     public Song CurrentSong;
     public List<Song> SongList = new List<Song>();
     public int ListIndex = 0;
+    public WindowState windowState;
     private ListView _songListView;
 
     public AppSystem(ListView songListView)
@@ -24,6 +29,27 @@ public class AppSystem
         {
             MessageBox.Show(exception.StackTrace, "Ошибка");
         }
+    }
+
+    public bool CreateTrayContextMenu(TaskbarIcon taskbar)
+    {
+        try
+        {
+            taskbar.ContextMenu = new ContextMenu();
+
+            MenuItem closeMenuItem = new MenuItem();
+            closeMenuItem.Header = "Close";
+            closeMenuItem.Click += (sender, args) =>
+                Application.Current.Shutdown();
+            taskbar.ContextMenu.Items.Add(closeMenuItem);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(exception.StackTrace, "Ошибка");
+            return false;
+        }
+
+        return true;
     }
 
     public bool CheckExistsMusicDir()
@@ -131,10 +157,9 @@ public class AppSystem
     {
         try
         {
-            ListIndex = ListIndex >= SongList.Count - 1 ? 0 : ListIndex++;
+            ListIndex = ListIndex >= SongList.Count - 1 ? 0 : ListIndex + 1;
             CurrentSong = SongList[ListIndex];
             ChangeFocusInSongList();
-            MessageBox.Show($"NextSong() ListIndex - {ListIndex}");
         }
         catch (Exception exception)
         {
@@ -149,10 +174,9 @@ public class AppSystem
     {
         try
         {
-            ListIndex = ListIndex <= 0 ? SongList.Count - 1 : ListIndex--;
+            ListIndex = ListIndex <= 0 ? SongList.Count - 1 : ListIndex - 1;
             CurrentSong = SongList[ListIndex];
             ChangeFocusInSongList();
-            MessageBox.Show($"PreviousSong() ListIndex - {ListIndex}");
         }
         catch (Exception exception)
         {
